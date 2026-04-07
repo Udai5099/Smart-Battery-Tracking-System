@@ -1,0 +1,10 @@
+﻿venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+battery_data.csv
+.DS_Store
+.env
+.env.*

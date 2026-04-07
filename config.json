@@ -1,0 +1,12 @@
+{
+    "broker": "broker.hivemq.com",
+    "port": 1883,
+    "topic": "smart_battery/data",
+    "alert_thresholds": {
+        "temperature": 50,
+        "voltage": 10,
+        "charge_cycles": 1000,
+        "capacity": 20
+    },
+    "update_interval": 1
+}
