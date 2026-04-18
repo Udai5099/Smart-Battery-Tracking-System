@@ -28,9 +28,9 @@ CONFIG_PATH = Path(__file__).parent.parent / "config" / "config.yaml"
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = yaml.safe_load(f)
 
-app = Flask(__name__)
+static_folder_path = os.path.join(os.path.dirname(__file__), 'static')
+app = Flask(__name__, static_folder=static_folder_path, static_url_path='/static')
 CORS(app)  # Enable CORS for React frontend
-app.static_folder = os.path.join(os.path.dirname(__file__), 'static')
 
 # Load model artifacts
 MODEL = None
@@ -214,14 +214,17 @@ def internal_error(error):
 @app.route('/<path:path>')
 def serve_react(path):
     try:
-        if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-            return send_from_directory(app.static_folder, path)
+        if path != "" and path.startswith('static/'):
+            static_path = os.path.join(app.static_folder, path)
+            if os.path.exists(static_path):
+                return send_from_directory(app.static_folder, path)
+            return jsonify({'error': f'Static asset not found: {path}'}), 404
+
+        index_path = os.path.join(app.static_folder, 'index.html')
+        if os.path.exists(index_path):
+            return send_from_directory(app.static_folder, 'index.html')
         else:
-            index_path = os.path.join(app.static_folder, 'index.html')
-            if os.path.exists(index_path):
-                return send_from_directory(app.static_folder, 'index.html')
-            else:
-                return jsonify({'error': f'index.html not found in {app.static_folder}'}), 404
+            return jsonify({'error': f'index.html not found in {app.static_folder}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
