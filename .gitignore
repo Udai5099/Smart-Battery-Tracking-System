@@ -1,10 +1,63 @@
-﻿venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.log
-battery_data.csv
-.DS_Store
+﻿# Python virtual environments
+venv/
+env/
+ENV/
+.venv
 .env
 .env.*
+
+# Python caches and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Data files (large, can be regenerated)
+data/processed/
+data/raw/
+*.csv
+battery_data.csv
+
+# Model artifacts (large, can be retrained)
+models/*.pkl
+models/*.pth
+models/*.h5
+
+# IDE and editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Node modules (frontend)
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
