@@ -13,7 +13,7 @@ This is a research-oriented implementation of a Human-AI Interaction system for 
 ```
 [Data Processing] → [ML Model] → [XAI Layer] → [API] → [Dashboard]
      ↓              ↓            ↓          ↓         ↓
- NASA Dataset   Random Forest   SHAP     Flask     React
+ NASA Dataset    Xgboost        SHAP     Flask     React
 ```
 
 ## Quick Start
