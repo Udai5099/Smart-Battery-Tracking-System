@@ -13,6 +13,7 @@ import yaml
 import sys
 import os
 from pathlib import Path
+import shap
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from xai.shap_analysis import explain_single_prediction, generate_human_readable_explanation, generate_recommendations
 import logging
@@ -42,7 +43,8 @@ def load_model_artifacts():
 
     try:
         MODEL = joblib.load(CONFIG['model']['model_file'])
-        EXPLAINER = joblib.load(CONFIG['model']['shap_explainer_file'])
+        # Create explainer instead of loading to avoid version compatibility issues
+        EXPLAINER = shap.TreeExplainer(MODEL)
         METADATA = joblib.load(CONFIG['model']['metadata_file'])
         logger.info("Model artifacts loaded successfully")
         return True
