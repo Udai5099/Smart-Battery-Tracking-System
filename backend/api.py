@@ -209,20 +209,6 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
-if __name__ == "__main__":
-    if load_model_artifacts():
-        print("Starting ML API server...")
-        print("Endpoints:")
-        print("  GET  /health - Health check")
-        print("  POST /predict - Single prediction with explanation")
-        print("  POST /batch_predict - Batch predictions")
-        print("  GET  /model_info - Model information")
-        print("\nServer running on http://localhost:5001")
-
-        app.run(host='0.0.0.0', port=5001, debug=True)
-    else:
-        print("Failed to load model artifacts. Please train the model first.")
-
 # Serve React app
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
@@ -238,3 +224,18 @@ def serve_react(path):
                 return jsonify({'error': f'index.html not found in {app.static_folder}'}), 404
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    if load_model_artifacts():
+        print("Starting ML API server...")
+        print("Endpoints:")
+        print("  GET  /health - Health check")
+        print("  POST /predict - Single prediction with explanation")
+        print("  POST /batch_predict - Batch predictions")
+        print("  GET  /model_info - Model information")
+        port = int(os.environ.get('PORT', 5001))
+        print(f"Server running on http://localhost:{port}")
+
+        app.run(host='0.0.0.0', port=port, debug=True)
+    else:
+        print("Failed to load model artifacts. Please train the model first.")
