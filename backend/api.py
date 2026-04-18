@@ -214,11 +214,9 @@ def internal_error(error):
 @app.route('/<path:path>')
 def serve_react(path):
     try:
-        if path != "" and path.startswith('static/'):
-            static_path = os.path.join(app.static_folder, path)
-            if os.path.exists(static_path):
-                return send_from_directory(app.static_folder, path)
-            return jsonify({'error': f'Static asset not found: {path}'}), 404
+        requested_path = os.path.join(app.static_folder, path)
+        if path != "" and os.path.exists(requested_path):
+            return send_from_directory(app.static_folder, path)
 
         index_path = os.path.join(app.static_folder, 'index.html')
         if os.path.exists(index_path):
