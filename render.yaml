@@ -11,8 +11,9 @@ services:
       - key: FRONTEND_ORIGIN
         sync: false
 
-  - type: static
+  - type: web
     name: smart-battery-frontend
+    runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/build
     routes:
