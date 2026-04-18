@@ -5,6 +5,7 @@ ENV/
 .venv
 .env
 .env.*
+!.env.example
 
 # Python caches and compiled files
 __pycache__/
@@ -48,6 +49,7 @@ frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
+!frontend/.env.example
 
 # npm/yarn
 npm-debug.log*

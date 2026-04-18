@@ -45,7 +45,7 @@ python xai/shap_analysis.py
 
 ### 6. Start ML API
 ```bash
-python backend/ml_api.py
+python backend/api.py
 ```
 
 ### 7. Evaluate Model
@@ -67,6 +67,60 @@ python models/evaluate.py
 ├── tests/                # Unit tests
 └── utils/                # Utilities
 ```
+
+## Render Deployment
+
+This repo is configured for two separate Render services:
+
+- `smart-battery-api`: Python web service for Flask, predictions, SHAP, and model metadata.
+- `smart-battery-frontend`: React static site for the dashboard.
+
+You can deploy both from `render.yaml` using Render Blueprints. After Render creates both services, set these environment variables:
+
+### Backend service
+
+```text
+FRONTEND_ORIGIN=https://your-frontend-site.onrender.com
+```
+
+This controls CORS. Use the exact URL Render gives your frontend static site.
+
+### Frontend static site
+
+```text
+REACT_APP_API_URL=https://your-api-service.onrender.com
+```
+
+This is baked into the React build, so redeploy the frontend after setting or changing it.
+
+### Local development
+
+Start the API:
+
+```bash
+python backend/api.py
+```
+
+Start the frontend in another terminal:
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+For local React development, either rely on the `proxy` in `frontend/package.json` or create `frontend/.env` from `frontend/.env.example`.
+
+### Troubleshooting asset 404s
+
+If the browser reports `manifest.json` syntax errors or `main.*.js` / `main.*.css` 404s, check which Render URL you opened:
+
+- Open the frontend static site URL to use the dashboard.
+- Open the backend web service URL only for API endpoints such as `/health`, `/predict`, and `/model_info`.
+- `REACT_APP_API_URL` must point to the backend URL.
+- `FRONTEND_ORIGIN` must point to the frontend URL.
+
+Those asset errors usually mean the browser requested React files from the API service, or the static site publish path is not `frontend/build`.
 
 ## Research Metrics
 

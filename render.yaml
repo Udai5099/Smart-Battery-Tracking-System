@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: smart-battery-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn backend.api:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: FRONTEND_ORIGIN
+        sync: false
+
+  - type: static
+    name: smart-battery-frontend
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false

@@ -4,7 +4,7 @@ Smart Battery System - API
 Flask API for battery health prediction and SHAP explanations
 """
 
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import pandas as pd
@@ -28,9 +28,10 @@ CONFIG_PATH = Path(__file__).parent.parent / "config" / "config.yaml"
 with open(CONFIG_PATH, 'r') as f:
     CONFIG = yaml.safe_load(f)
 
-static_folder_path = os.path.join(os.path.dirname(__file__), 'static')
-app = Flask(__name__, static_folder=static_folder_path, static_url_path='/static')
-CORS(app)  # Enable CORS for React frontend
+app = Flask(__name__)
+
+frontend_origin = os.environ.get("FRONTEND_ORIGIN", "*")
+CORS(app, resources={r"/*": {"origins": frontend_origin}})
 
 # Load model artifacts
 MODEL = None
@@ -52,6 +53,9 @@ def load_model_artifacts():
         logger.error(f"Model artifacts not found: {e}")
         logger.error("Please run models/train.py first")
         return False
+    except Exception as e:
+        logger.error(f"Failed to load model artifacts: {e}")
+        return False
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -60,6 +64,20 @@ def health_check():
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'model_loaded': MODEL is not None
+    })
+
+@app.route('/', methods=['GET'])
+def api_index():
+    """Small API landing response for separate frontend/backend deployments."""
+    return jsonify({
+        'service': 'Smart Battery Tracking API',
+        'status': 'running',
+        'endpoints': {
+            'health': '/health',
+            'predict': '/predict',
+            'batch_predict': '/batch_predict',
+            'model_info': '/model_info'
+        }
     })
 
 @app.route('/predict', methods=['POST'])
@@ -209,25 +227,10 @@ def not_found(error):
 def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
-# Serve React app
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_react(path):
-    try:
-        requested_path = os.path.join(app.static_folder, path)
-        if path != "" and os.path.exists(requested_path):
-            return send_from_directory(app.static_folder, path)
-
-        index_path = os.path.join(app.static_folder, 'index.html')
-        if os.path.exists(index_path):
-            return send_from_directory(app.static_folder, 'index.html')
-        else:
-            return jsonify({'error': f'index.html not found in {app.static_folder}'}), 404
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+load_model_artifacts()
 
 if __name__ == "__main__":
-    if load_model_artifacts():
+    if MODEL is not None:
         print("Starting ML API server...")
         print("Endpoints:")
         print("  GET  /health - Health check")
@@ -237,6 +240,7 @@ if __name__ == "__main__":
         port = int(os.environ.get('PORT', 5001))
         print(f"Server running on http://localhost:{port}")
 
-        app.run(host='0.0.0.0', port=port, debug=True)
+        debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+        app.run(host='0.0.0.0', port=port, debug=debug)
     else:
         print("Failed to load model artifacts. Please train the model first.")

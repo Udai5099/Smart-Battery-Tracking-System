@@ -14,3 +14,4 @@ flask==3.0.3
 numpy
 flask-cors
 pyyaml
+gunicorn
