@@ -7,8 +7,6 @@ import shap
 import joblib
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from pathlib import Path
 import os
 
@@ -294,6 +292,8 @@ def create_shap_visualizations(model, explainer, X_sample, feature_names, output
         feature_names: Feature names
         output_dir: Output directory for plots
     """
+    import matplotlib.pyplot as plt
+
     os.makedirs(output_dir, exist_ok=True)
 
     # Calculate SHAP values
