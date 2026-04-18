@@ -10,7 +10,7 @@ COPY frontend/package*.json ./frontend/
 WORKDIR /app/frontend
 RUN npm install
 COPY frontend/ ./
-RUN npm run build
+RUN npm run build && ls -la build/ && test -f build/index.html
 
 # Go back to root
 WORKDIR /app
@@ -23,7 +23,7 @@ COPY . .
 
 # Copy built frontend to backend static folder
 RUN mkdir -p backend/static
-RUN cp -r frontend/build/* backend/static/
+RUN cp -r frontend/build/* backend/static/ && ls -la backend/static/
 
 EXPOSE 5001
 
