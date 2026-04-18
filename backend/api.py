@@ -30,7 +30,7 @@ with open(CONFIG_PATH, 'r') as f:
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
-app.static_folder = 'backend/static'
+app.static_folder = os.path.join(os.path.dirname(__file__), 'static')
 
 # Load model artifacts
 MODEL = None
