@@ -22,10 +22,10 @@ data/raw/
 *.csv
 battery_data.csv
 
-# Model artifacts (large, can be retrained)
-models/*.pkl
-models/*.pth
-models/*.h5
+# Model artifacts (keep for deployment)
+# models/*.pkl
+# models/*.pth
+# models/*.h5
 
 # IDE and editor configs
 .vscode/

@@ -70,7 +70,8 @@ function App() {
     setError(null);
 
     try {
-      const response = await axios.post('/predict', batteryData);
+      const apiUrl = process.env.REACT_APP_API_URL || '';
+      const response = await axios.post(`${apiUrl}/predict`, batteryData);
       setPrediction(response.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Prediction failed');
