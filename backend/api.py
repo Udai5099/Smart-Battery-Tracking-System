@@ -19,6 +19,25 @@ from xai.shap_analysis import explain_single_prediction, generate_human_readable
 import logging
 from datetime import datetime
 
+
+#helper function to change data to numpy array
+def convert_numpy(obj):
+    import numpy as np
+
+    if isinstance(obj, np.generic):  # float32, int64 etc.
+        return obj.item()
+
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+
+    if isinstance(obj, dict):
+        return {k: convert_numpy(v) for k, v in obj.items()}
+
+    if isinstance(obj, list):
+        return [convert_numpy(i) for i in obj]
+
+    return obj
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -140,11 +159,13 @@ def predict():
         }
 
         logger.info(f"Prediction completed: RUL = {explanation['prediction']:.1f}")
-        return jsonify(response)
+        clean_response = convert_numpy(response)
+        return jsonify(clean_response)
 
     except Exception as e:
         logger.error(f"Prediction error: {e}")
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/batch_predict', methods=['POST'])
 def batch_predict():
@@ -172,11 +193,11 @@ def batch_predict():
                     data, MODEL, EXPLAINER, None, METADATA['features']
                 )
 
-                results.append({
+                results.append(convert_numpy({
                     'index': i,
                     'prediction': explanation['prediction'],
                     'top_contributors': explanation['top_contributors'][:3]
-                })
+                    }))
 
             except Exception as e:
                 results.append({
