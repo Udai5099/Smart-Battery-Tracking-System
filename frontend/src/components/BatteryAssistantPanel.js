@@ -6,11 +6,6 @@ import {
   Chip,
   CircularProgress,
   Divider,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
   Typography
@@ -25,41 +20,8 @@ const sampleQuestions = [
   'What should I check if voltage drops suddenly?'
 ];
 
-const providerOptions = [
-  { value: 'auto', label: 'Auto' },
-  { value: 'gemini', label: 'Gemini' },
-  { value: 'local', label: 'Local fallback' }
-];
-
-const getProviderLabel = (value) => (
-  providerOptions.find((option) => option.value === value)?.label || value || 'Auto'
-);
-
-function ResultMetric({ label, value }) {
-  return (
-    <Box
-      sx={{
-        p: 1.5,
-        borderRadius: 1,
-        border: '1px solid rgba(23, 105, 170, 0.16)',
-        backgroundColor: 'rgba(23, 105, 170, 0.04)',
-        minHeight: 72
-      }}
-    >
-      <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
-        {label}
-      </Typography>
-      <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-        {value}
-      </Typography>
-    </Box>
-  );
-}
-
 function BatteryAssistantPanel() {
   const [query, setQuery] = useState(sampleQuestions[0]);
-  const [provider, setProvider] = useState('auto');
-  const [topK, setTopK] = useState(3);
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -77,13 +39,10 @@ function BatteryAssistantPanel() {
       const apiUrl = process.env.REACT_APP_API_URL || '';
       const result = await axios.post(`${apiUrl}/rag/query`, {
         query: query.trim(),
-        top_k: topK,
-        provider
+        top_k: 3,
+        provider: 'auto'
       });
-      setResponse({
-        ...result.data,
-        selected_provider: provider
-      });
+      setResponse(result.data);
     } catch (err) {
       setError(err.response?.data?.error || 'Battery assistant request failed.');
     } finally {
@@ -120,52 +79,14 @@ function BatteryAssistantPanel() {
         ))}
       </Stack>
 
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            label="Battery question"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Stack spacing={2}>
-            <FormControl fullWidth size="small">
-              <InputLabel id="rag-provider-label">Answer provider</InputLabel>
-              <Select
-                labelId="rag-provider-label"
-                label="Answer provider"
-                value={provider}
-                onChange={(event) => setProvider(event.target.value)}
-              >
-                {providerOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth size="small">
-              <InputLabel id="rag-topk-label">Retrieved docs</InputLabel>
-              <Select
-                labelId="rag-topk-label"
-                label="Retrieved docs"
-                value={topK}
-                onChange={(event) => setTopK(Number(event.target.value))}
-              >
-                {[2, 3, 4, 5].map((value) => (
-                  <MenuItem key={value} value={value}>
-                    Top {value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-        </Grid>
-      </Grid>
+      <TextField
+        fullWidth
+        multiline
+        minRows={3}
+        label="Battery question"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
 
       <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
         <Button variant="contained" startIcon={<SearchIcon />} onClick={handleAsk} disabled={loading}>
@@ -183,23 +104,6 @@ function BatteryAssistantPanel() {
       {response && (
         <Box sx={{ mt: 3 }}>
           <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={1.5} sx={{ mb: 2 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <ResultMetric label="Answer provider" value={getProviderLabel(response.selected_provider)} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <ResultMetric
-                label="Knowledge docs"
-                value={response.knowledge_base?.document_count ?? response.retrieved_documents?.length ?? 0}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <ResultMetric label="Embedding model" value={response.knowledge_base?.embedding_model ?? 'hashing-v1'} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <ResultMetric label="Retrieved docs shown" value={(response.retrieved_documents || []).length} />
-            </Grid>
-          </Grid>
           <Typography variant="subtitle1" gutterBottom>
             Grounded answer
           </Typography>
