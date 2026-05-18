@@ -31,6 +31,10 @@ const providerOptions = [
   { value: 'local', label: 'Local fallback' }
 ];
 
+const getProviderLabel = (value) => (
+  providerOptions.find((option) => option.value === value)?.label || value || 'Auto'
+);
+
 function ResultMetric({ label, value }) {
   return (
     <Box
@@ -76,7 +80,10 @@ function BatteryAssistantPanel() {
         top_k: topK,
         provider
       });
-      setResponse(result.data);
+      setResponse({
+        ...result.data,
+        selected_provider: provider
+      });
     } catch (err) {
       setError(err.response?.data?.error || 'Battery assistant request failed.');
     } finally {
@@ -178,7 +185,7 @@ function BatteryAssistantPanel() {
           <Divider sx={{ mb: 2 }} />
           <Grid container spacing={1.5} sx={{ mb: 2 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <ResultMetric label="Answer provider" value={response.provider || 'local'} />
+              <ResultMetric label="Answer provider" value={getProviderLabel(response.selected_provider)} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <ResultMetric
