@@ -22,17 +22,18 @@ import PredictionPanel from './components/PredictionPanel';
 import ShapVisualization from './components/ShapVisualization';
 import RecommendationsPanel from './components/RecommendationsPanel';
 import FeatureImportanceChart from './components/FeatureImportanceChart';
+import BatteryAssistantPanel from './components/BatteryAssistantPanel';
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#1769aa',
     },
     secondary: {
-      main: '#dc004e',
+      main: '#0f9d8f',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f7f9fb',
     },
   },
   typography: {
@@ -96,13 +97,12 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header */}
         <Box sx={{ mb: 4, textAlign: 'center' }}>
           <Typography variant="h4" component="h1" gutterBottom color="primary">
-            🔋 Smart Battery Health Monitoring Dashboard
+            Smart Battery Health Monitoring Dashboard
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
-            Human-AI Interaction System with Explainable Predictions
+            Explainable predictions with a deployable RAG assistant for battery queries
           </Typography>
           {healthStatus && (
             <Chip
@@ -115,14 +115,12 @@ function App() {
           )}
         </Box>
 
-        {/* Error Alert */}
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
 
-        {/* Loading Indicator */}
         {loading && (
           <Box sx={{ mb: 3 }}>
             <LinearProgress />
@@ -132,11 +130,15 @@ function App() {
           </Box>
         )}
 
-        {/* Main Dashboard Grid */}
         <Grid container spacing={3}>
-          {/* Prediction Panel */}
+          <Grid item xs={12}>
+            <Paper elevation={3} sx={{ p: 3, borderRadius: 1 }}>
+              <BatteryAssistantPanel />
+            </Paper>
+          </Grid>
+
           <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+            <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: 1 }}>
               <PredictionPanel
                 prediction={prediction}
                 batteryData={batteryData}
@@ -147,29 +149,25 @@ function App() {
             </Paper>
           </Grid>
 
-          {/* SHAP Visualization */}
           <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+            <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: 1 }}>
               <ShapVisualization prediction={prediction} />
             </Paper>
           </Grid>
 
-          {/* Feature Importance Chart */}
           <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+            <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: 1 }}>
               <FeatureImportanceChart prediction={prediction} />
             </Paper>
           </Grid>
 
-          {/* Recommendations Panel */}
           <Grid item xs={12} md={6}>
-            <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+            <Paper elevation={3} sx={{ p: 3, height: '100%', borderRadius: 1 }}>
               <RecommendationsPanel prediction={prediction} />
             </Paper>
           </Grid>
         </Grid>
 
-        {/* Footer */}
         <Box sx={{ mt: 4, textAlign: 'center', color: 'text.secondary' }}>
           <Typography variant="body2">
             Research-Grade Human-AI Interaction System | Track 5 Publication
