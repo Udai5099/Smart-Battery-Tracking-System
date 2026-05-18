@@ -30,8 +30,28 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     CONFIG = yaml.safe_load(f)
 
 app = Flask(__name__)
-frontend_origin = os.environ.get("FRONTEND_ORIGIN", "*")
-CORS(app, resources={r"/*": {"origins": frontend_origin}})
+
+
+def build_cors_origins():
+    configured_origins = [
+        origin.strip().rstrip("/")
+        for origin in os.environ.get("FRONTEND_ORIGIN", "").split(",")
+        if origin.strip()
+    ]
+    default_origins = [
+        "https://smart-battery-frontend.onrender.com",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+    return sorted(set(configured_origins + default_origins))
+
+
+CORS(
+    app,
+    resources={r"/*": {"origins": build_cors_origins()}},
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 MODEL = None
 EXPLAINER = None
